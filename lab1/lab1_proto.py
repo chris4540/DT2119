@@ -1,8 +1,10 @@
 # DT2119, Lab 1 Feature Extraction
+import numpy as np
+
 
 # Function given by the exercise ----------------------------------
 
-def mspec(samples, winlen = 400, winshift = 200, preempcoeff=0.97, nfft=512, samplingrate=20000)
+def mspec(samples, winlen=400, winshift=200, preempcoeff=0.97, nfft=512, samplingrate=20000)
     """Computes Mel Filterbank features.
 
     Args:
@@ -22,7 +24,7 @@ def mspec(samples, winlen = 400, winshift = 200, preempcoeff=0.97, nfft=512, sam
     spec = powerSpectrum(windowed, nfft)
     return logMelSpectrum(spec, samplingrate)
 
-def mfcc(samples, winlen = 400, winshift = 200, preempcoeff=0.97, nfft=512, nceps=13, samplingrate=20000, liftercoeff=22):
+def mfcc(samples, winlen=400, winshift=200, preempcoeff=0.97, nfft=512, nceps=13, samplingrate=20000, liftercoeff=22):
     """Computes Mel Frequency Cepstrum Coefficients.
 
     Args:
@@ -55,7 +57,24 @@ def enframe(samples, winlen, winshift):
         numpy array [N x winlen], where N is the number of windows that fit
         in the input signal
     """
-    
+
+    # consider the end of one frame as a pointer
+    # 1. Subtract the first frame from the total length
+    # 2. count number the number of frames obtained by shifting
+    # 3. add back the step 1 frame
+    num_frame = ((samples.shape[0] - winlen) // winshift) + 1
+
+    ret = np.ndarray(shape=(num_frame, winlen))
+
+    js = 0
+    jn = js + winlen
+    for i in range(num_frame):
+        ret[i, :] = samples[js:jn]
+        js += winshift
+        jn = js + winlen
+
+    return ret
+
 def preemp(input, p=0.97):
     """
     Pre-emphasis filter.
@@ -69,6 +88,7 @@ def preemp(input, p=0.97):
         output: array of pre-emphasised speech samples
     Note (you can use the function lfilter from scipy.signal)
     """
+    pass
 
 def windowing(input):
     """
@@ -82,6 +102,7 @@ def windowing(input):
     Note (you can use the function hamming from scipy.signal, include the sym=0 option
     if you want to get the same results as in the example)
     """
+    pass
 
 def powerSpectrum(input, nfft):
     """
@@ -95,6 +116,7 @@ def powerSpectrum(input, nfft):
         array of power spectra [N x nfft]
     Note: you can use the function fft from scipy.fftpack
     """
+    pass
 
 def logMelSpectrum(input, samplingrate):
     """
@@ -110,6 +132,7 @@ def logMelSpectrum(input, samplingrate):
     Note: use the trfbank function provided in lab1_tools.py to calculate the filterbank shapes and
           nmelfilters
     """
+    pass
 
 def cepstrum(input, nceps):
     """
@@ -123,6 +146,7 @@ def cepstrum(input, nceps):
         array of Cepstral coefficients [N x nceps]
     Note: you can use the function dct from scipy.fftpack.realtransforms
     """
+    pass
 
 def dtw(x, y, dist):
     """Dynamic Time Warping.
@@ -140,3 +164,4 @@ def dtw(x, y, dist):
 
     Note that you only need to define the first output for this exercise.
     """
+    pass
