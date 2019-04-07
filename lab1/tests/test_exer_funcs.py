@@ -4,6 +4,7 @@ from numpy.testing import assert_allclose
 from lab1_proto import enframe
 from lab1_proto import preemp
 from lab1_proto import windowing
+from lab1_proto import powerSpectrum
 
 
 class TestExerciseFunctions(unittest.TestCase):
@@ -37,3 +38,12 @@ class TestExerciseFunctions(unittest.TestCase):
         windowed = windowing(pre_emph)
         exp_ans = self.data['windowed']
         assert_allclose(windowed, exp_ans, rtol=0, atol=0)
+
+    def test_powerSpectrum(self):
+        exp_ans = self.data['spec']
+        nfft = exp_ans.shape[1]
+        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
+        pre_emph = preemp(frames, p=0.97)
+        windowed = windowing(pre_emph)
+        power_spec = powerSpectrum(windowed, nfft=nfft)
+        assert_allclose(power_spec, exp_ans, rtol=0, atol=0)

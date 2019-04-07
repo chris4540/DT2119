@@ -2,7 +2,7 @@
 import numpy as np
 import scipy
 import scipy.signal
-
+import scipy.fftpack
 
 # Function given by the exercise ----------------------------------
 
@@ -113,10 +113,10 @@ def windowing(input_):
     1. https://www.edn.com/electronics-news/4383713/Windowing-Functions-Improve-FFT-Results-Part-I
     2. https://en.wikipedia.org/wiki/Spectral_leakage
     """
-    frame_size = 400  # We apply the hamming window to each frame
+    frame_size = input_.shape[1]  # We apply the hamming window to each frame
     return input_ * scipy.signal.hamming(frame_size, sym=False)
 
-def powerSpectrum(input, nfft):
+def powerSpectrum(input_, nfft):
     """
     Calculates the power spectrum of the input signal, that is the square of the modulus of the FFT
 
@@ -128,7 +128,8 @@ def powerSpectrum(input, nfft):
         array of power spectra [N x nfft]
     Note: you can use the function fft from scipy.fftpack
     """
-    pass
+    ret = np.abs(scipy.fftpack.fft(input_, nfft))**2
+    return ret
 
 def logMelSpectrum(input, samplingrate):
     """
