@@ -13,7 +13,8 @@ from lab1_proto import mfcc
 from lab1_proto import mspec
 import matplotlib.pyplot as plt
 
-def get_corrcoef_matrix(data, feature="mfcc"):
+
+def concat_all_features(data, feature="mfcc"):
     assert feature in ["mfcc", "mspec"]
     all_features = None
     for d in data:
@@ -28,7 +29,10 @@ def get_corrcoef_matrix(data, feature="mfcc"):
             all_features = features
         else:
             all_features = np.concatenate((all_features, features), axis=0)
+    return all_features
 
+def get_corrcoef_matrix(data, feature="mfcc"):
+    all_features = concat_all_features(data, feature)
     return np.corrcoef(all_features.T)
 
 if __name__ == "__main__":
