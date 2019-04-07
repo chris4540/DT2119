@@ -90,12 +90,13 @@ def preemp(input_, p=0.97):
         output: array of pre-emphasised speech samples
     Note (you can use the function lfilter from scipy.signal)
     """
+    # y[n] = x[n] - p * x[n-1]
     b_coeff = np.array([1.0, -p])
     a_coeff = np.array([1.0])
     return scipy.signal.lfilter(b_coeff, a_coeff, input_, axis=1)
 
 
-def windowing(input):
+def windowing(input_):
     """
     Applies hamming window to the input frames.
 
@@ -103,11 +104,17 @@ def windowing(input):
         input: array of speech samples [N x M] where N is the number of frames and
                M the samples per frame
     Output:
-        array of windoed speech samples [N x M]
+        array of windowed speech samples [N x M]
     Note (you can use the function hamming from scipy.signal, include the sym=0 option
     if you want to get the same results as in the example)
+
+    PS: We use hamming windows to reduce the spectral leakage as we do finite data fourier transform.
+    See also:
+    1. https://www.edn.com/electronics-news/4383713/Windowing-Functions-Improve-FFT-Results-Part-I
+    2. https://en.wikipedia.org/wiki/Spectral_leakage
     """
-    pass
+    frame_size = 400  # We apply the hamming window to each frame
+    return input_ * scipy.signal.hamming(frame_size, sym=False)
 
 def powerSpectrum(input, nfft):
     """

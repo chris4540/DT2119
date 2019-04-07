@@ -3,6 +3,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 from lab1_proto import enframe
 from lab1_proto import preemp
+from lab1_proto import windowing
 
 
 class TestExerciseFunctions(unittest.TestCase):
@@ -29,3 +30,10 @@ class TestExerciseFunctions(unittest.TestCase):
         pre_emph = preemp(frames, p=0.97)
         exp_ans = self.data['preemph']
         assert_allclose(pre_emph, exp_ans, rtol=0, atol=0)
+
+    def test_windowing(self):
+        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
+        pre_emph = preemp(frames, p=0.97)
+        windowed = windowing(pre_emph)
+        exp_ans = self.data['windowed']
+        assert_allclose(windowed, exp_ans, rtol=0, atol=0)
