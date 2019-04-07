@@ -10,7 +10,7 @@ class TestEnframe(unittest.TestCase):
     win_shift_s = 10e-3     # 10ms
 
     def setUp(self):
-        example = np.load('lab1_example.npz')['example'].item()
+        example = np.load('data/lab1_example.npz')['example'].item()
         self.samples = example['samples']
         self.frames = example['frames']
         sampling_rate = example['samplingrate']
