@@ -9,6 +9,7 @@ import scipy
 import scipy.signal
 from scipy import fftpack
 from lab1_tools import trfbank
+from lab1_tools import lifter
 
 # Function given by the exercise ----------------------------------
 
