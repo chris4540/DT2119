@@ -22,5 +22,6 @@ pip install --upgrade pip
 
 # install packages in binary format (wheel)
 pip install numpy
+pip install scipy
 pip install matplotlib
 

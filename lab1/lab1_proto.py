@@ -1,5 +1,7 @@
 # DT2119, Lab 1 Feature Extraction
 import numpy as np
+import scipy
+import scipy.signal
 
 
 # Function given by the exercise ----------------------------------
@@ -75,7 +77,7 @@ def enframe(samples, winlen, winshift):
 
     return ret
 
-def preemp(input, p=0.97):
+def preemp(input_, p=0.97):
     """
     Pre-emphasis filter.
 
@@ -88,7 +90,10 @@ def preemp(input, p=0.97):
         output: array of pre-emphasised speech samples
     Note (you can use the function lfilter from scipy.signal)
     """
-    pass
+    b_coeff = np.array([1.0, -p])
+    a_coeff = np.array([1.0])
+    return scipy.signal.lfilter(b_coeff, a_coeff, input_, axis=1)
+
 
 def windowing(input):
     """
