@@ -1,31 +1,55 @@
 from sklearn.mixture import GaussianMixture
 from feature_corr import concat_all_features
 from lab1_proto import mfcc
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import AxesGrid
 
-def get_test_data(data, digit):
+def pick_data_by_digit(data, digit):
     """
     Args:
         digit: the string of the target digit
     """
-    ret = None
+    ret = list()
     for d in data:
         if d['digit'] == digit:
-            features = mfcc(d['samples'], samplingrate=d['samplingrate'])
-
-            if ret is None:
-                ret = features
-            else:
-                ret = np.concatenate((ret, features), axis=0)
+            ret.append(d)
+            # features = mfcc(d['samples'], samplingrate=d['samplingrate'])
+            # ret.append(features)
     return ret
 
 if __name__ == "__main__":
     data = np.load('data/lab1_data.npz')['data']
     all_features = concat_all_features(data, feature="mfcc")
 
-    test_data = get_test_data(data, digit='7')
+    clf = GaussianMixture(32, covariance_type='diag', verbose=1)
+    # train the GMM with all data
+    clf.fit(all_features)
 
-    gmm = GaussianMixture(32, covariance_type='diag', verbose=1)
-    # train
-    gmm.fit(all_features)
+    test_data = pick_data_by_digit(data, digit='7')
 
-    # prediction
+    fig, axes = plt.subplots(nrows=len(test_data), ncols=1, sharex=True, sharey=True, figsize=(12, 8))
+    # prediction and plot the posterior matrix
+    for i, d in enumerate(test_data):
+        features = mfcc(d['samples'], samplingrate=d['samplingrate'])
+        posterior_prob = clf.predict_proba(features)
+        ax = axes[i]
+        title = 'Digit {digit} by {speaker} ({gender})'.format(**d)
+        ax.set_title(title)
+        im = ax.matshow(posterior_prob.T)
+        ax.xaxis.tick_bottom()
+        ax.set_aspect('auto')
+
+    for ax in axes.flat:
+        ax.set(xlabel='frame', ylabel='classes')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    for ax in axes.flat:
+        ax.label_outer()
+
+    fig.tight_layout()
+    # add shared colorbar
+    fig.subplots_adjust(right=0.85)
+    cbar_ax = fig.add_axes([0.86, 0.15, 0.02, 0.7])
+    fig.colorbar(im, cax=cbar_ax)
+
+    plt.savefig("test.png", dpi=100, bbox_inches='tight')
