@@ -5,6 +5,7 @@ from lab1_proto import enframe
 from lab1_proto import preemp
 from lab1_proto import windowing
 from lab1_proto import powerSpectrum
+from lab1_proto import logMelSpectrum
 
 
 class TestExerciseFunctions(unittest.TestCase):
@@ -16,34 +17,32 @@ class TestExerciseFunctions(unittest.TestCase):
         self.data = np.load('data/lab1_example.npz')['example'].item()
         self.samples = self.data['samples']
 
-        sampling_rate = self.data['samplingrate']
-
-        self.winlen = int(self.win_size_s * sampling_rate)
-        self.winshift = int(self.win_shift_s * sampling_rate)
-
     def test_enframe(self):
-        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
+        sampling_rate = self.data['samplingrate']
+        winlen = int(self.win_size_s * sampling_rate)
+        winshift = int(self.win_shift_s * sampling_rate)
+        frames = enframe(self.samples, winlen=winlen, winshift=winshift)
         exp_ans = self.data['frames']
         assert_allclose(frames, exp_ans, rtol=0, atol=0)
 
     def test_preemp(self):
-        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
-        pre_emph = preemp(frames, p=0.97)
+        # frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
+        pre_emph = preemp(self.data['frames'], p=0.97)
         exp_ans = self.data['preemph']
         assert_allclose(pre_emph, exp_ans, rtol=0, atol=0)
 
     def test_windowing(self):
-        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
-        pre_emph = preemp(frames, p=0.97)
-        windowed = windowing(pre_emph)
+        windowed = windowing(self.data['preemph'])
         exp_ans = self.data['windowed']
-        assert_allclose(windowed, exp_ans, rtol=0, atol=0)
+        assert_allclose(windowed, self.data['windowed'], rtol=0, atol=0)
 
     def test_powerSpectrum(self):
         exp_ans = self.data['spec']
         nfft = exp_ans.shape[1]
-        frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
-        pre_emph = preemp(frames, p=0.97)
-        windowed = windowing(pre_emph)
-        power_spec = powerSpectrum(windowed, nfft=nfft)
+        power_spec = powerSpectrum(self.data['windowed'], nfft=nfft)
         assert_allclose(power_spec, exp_ans, rtol=0, atol=0)
+
+    def test_logMelSpectrum(self):
+        mspec = logMelSpectrum(self.data['spec'], self.data['samplingrate'])
+        exp_ans = self.data['mspec']
+        assert_allclose(mspec, exp_ans, rtol=0, atol=0)

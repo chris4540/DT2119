@@ -1,8 +1,14 @@
-# DT2119, Lab 1 Feature Extraction
+"""
+DT2119, Lab 1 Feature Extraction
+
+See also:
+https://haythamfayek.com/2016/04/21/speech-processing-for-machine-learning.html
+"""
 import numpy as np
 import scipy
 import scipy.signal
 import scipy.fftpack
+from lab1_tools import trfbank
 
 # Function given by the exercise ----------------------------------
 
@@ -131,7 +137,7 @@ def powerSpectrum(input_, nfft):
     ret = np.abs(scipy.fftpack.fft(input_, nfft))**2
     return ret
 
-def logMelSpectrum(input, samplingrate):
+def logMelSpectrum(input_, samplingrate):
     """
     Calculates the log output of a Mel filterbank when the input is the power spectrum
 
@@ -142,10 +148,12 @@ def logMelSpectrum(input, samplingrate):
     Output:
         array of Mel filterbank log outputs [N x nmelfilters] where nmelfilters is the number
         of filters in the filterbank
+
     Note: use the trfbank function provided in lab1_tools.py to calculate the filterbank shapes and
           nmelfilters
     """
-    pass
+    nfft = input_.shape[1]
+    return np.log(input_.dot(trfbank(samplingrate, nfft).T))
 
 def cepstrum(input, nceps):
     """

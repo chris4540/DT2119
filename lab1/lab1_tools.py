@@ -1,6 +1,6 @@
 import numpy as np
 # DT2119, Lab 1 Feature Extraction
-# - Functions given by the exercise -------------------------------------------- 
+# - Functions given by the exercise --------------------------------------------
 
 def tidigit2labels(tidigitsarray):
     """
@@ -10,9 +10,9 @@ def tidigit2labels(tidigitsarray):
     labels = []
     nex = len(tidigitsarray)
     for ex in range(nex):
-        labels.append(tidigitsarray[ex]['gender'] + '_' + 
-                      tidigitsarray[ex]['speaker'] + '_' + 
-                      tidigitsarray[ex]['digit'] + '_' + 
+        labels.append(tidigitsarray[ex]['gender'] + '_' +
+                      tidigitsarray[ex]['speaker'] + '_' +
+                      tidigitsarray[ex]['digit'] + '_' +
                       tidigitsarray[ex]['repetition'])
     return labels
 
@@ -28,7 +28,7 @@ def dither(samples, level=1.0):
         array of dithered samples (same shape as samples)
     """
     return samples + level*np.random.normal(0,1, samples.shape)
-    
+
 
 def lifter(mfcc, lifter=22):
     """
@@ -49,7 +49,8 @@ def hz2mel(f):
     return 1127.01048 * np.log(f/700 +1)
 
 def trfbank(fs, nfft, lowfreq=133.33, linsc=200/3., logsc=1.0711703, nlinfilt=13, nlogfilt=27, equalareas=False):
-    """Compute triangular filterbank for MFCC computation.
+    """
+    Compute triangular filterbank for MFCC computation.
 
     Inputs:
     fs:         sampling frequency (rate)
@@ -63,7 +64,8 @@ def trfbank(fs, nfft, lowfreq=133.33, linsc=200/3., logsc=1.0711703, nlinfilt=13
     Outputs:
     res:  array with shape [N, nfft], with filter amplitudes for each column.
             (N=nlinfilt+nlogfilt)
-    From scikits.talkbox"""
+    From scikits.talkbox
+    """
     # Total number of filters
     nfilt = nlinfilt + nlogfilt
 
