@@ -7,7 +7,7 @@ https://haythamfayek.com/2016/04/21/speech-processing-for-machine-learning.html
 import numpy as np
 import scipy
 import scipy.signal
-import scipy.fftpack
+from scipy import fftpack
 from lab1_tools import trfbank
 
 # Function given by the exercise ----------------------------------
@@ -134,7 +134,7 @@ def powerSpectrum(input_, nfft):
         array of power spectra [N x nfft]
     Note: you can use the function fft from scipy.fftpack
     """
-    ret = np.abs(scipy.fftpack.fft(input_, nfft))**2
+    ret = np.abs(fftpack.fft(input_, nfft))**2
     return ret
 
 def logMelSpectrum(input_, samplingrate):
@@ -155,7 +155,7 @@ def logMelSpectrum(input_, samplingrate):
     nfft = input_.shape[1]
     return np.log(input_.dot(trfbank(samplingrate, nfft).T))
 
-def cepstrum(input, nceps):
+def cepstrum(input_, nceps):
     """
     Calulates Cepstral coefficients from mel spectrum applying Discrete Cosine Transform
 
@@ -167,7 +167,9 @@ def cepstrum(input, nceps):
         array of Cepstral coefficients [N x nceps]
     Note: you can use the function dct from scipy.fftpack.realtransforms
     """
-    pass
+    # Lecture notes match only type II cosine transform
+    ret = fftpack.dct(input_, type=2, axis=1)[:, :nceps]
+    return ret
 
 def dtw(x, y, dist):
     """Dynamic Time Warping.

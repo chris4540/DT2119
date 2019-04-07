@@ -6,12 +6,14 @@ from lab1_proto import preemp
 from lab1_proto import windowing
 from lab1_proto import powerSpectrum
 from lab1_proto import logMelSpectrum
-
+from lab1_proto import cepstrum
+from lab1_tools import lifter
 
 class TestExerciseFunctions(unittest.TestCase):
     # setting
     win_size_s = 20e-3      # 20ms
     win_shift_s = 10e-3     # 10ms
+    nceps = 13
 
     def setUp(self):
         self.data = np.load('data/lab1_example.npz')['example'].item()
@@ -46,3 +48,11 @@ class TestExerciseFunctions(unittest.TestCase):
         mspec = logMelSpectrum(self.data['spec'], self.data['samplingrate'])
         exp_ans = self.data['mspec']
         assert_allclose(mspec, exp_ans, rtol=0, atol=0)
+
+    def test_cepstrum(self):
+        mfcc = cepstrum(self.data['mspec'], nceps=self.nceps)
+        assert_allclose(mfcc, self.data['mfcc'], rtol=0, atol=0)
+
+    def test_lmfcc(self):
+        lmfcc = lifter(self.data['mfcc'])
+        assert_allclose(lmfcc, self.data['lmfcc'], rtol=0, atol=0)
