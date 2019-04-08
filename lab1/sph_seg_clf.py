@@ -35,11 +35,13 @@ if __name__ == "__main__":
     try:
         os.makedirs("plots")
     except FileExistsError:
-        # directory already exists
         pass
 
     for ncom in [4, 8, 16, 32]:
-        clf = GaussianMixture(ncom, covariance_type='diag', verbose=1)
+        clf = GaussianMixture(
+            n_components=ncom, covariance_type='diag',
+            random_state=40, verbose=1)  # fix the initialization for repetition
+
         # train the GMM with all data
         clf.fit(all_features)
 

@@ -8,6 +8,7 @@ Q: Is the assumption of diagonal covariance matrices for Gaussian modelling just
 A: From the graph we can see that the off-diagonal term are small and close to zero.
    Therefore, the gaussian modelling is justified.
 """
+import os
 import numpy as np
 from lab1_proto import mfcc
 from lab1_proto import mspec
@@ -38,6 +39,11 @@ def get_corrcoef_matrix(data, feature="mfcc"):
 if __name__ == "__main__":
     data = np.load('data/lab1_data.npz')['data']
 
+    try:
+        os.makedirs("plots")
+    except FileExistsError:
+        pass
+
     for f in ["mfcc", "mspec"]:
         corr = get_corrcoef_matrix(data, feature=f)
         # plot the matrix out
@@ -47,6 +53,6 @@ if __name__ == "__main__":
         ax.xaxis.tick_bottom()
         plt.title("Correlation coefficient matrix of %s" % f)
         plt.tight_layout()
-        plt.savefig("part5_%s_cof_mat.png" % f)
+        plt.savefig("plots/part5_%s_cof_mat.png" % f)
 
 
