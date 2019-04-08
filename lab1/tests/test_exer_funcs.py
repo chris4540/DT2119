@@ -10,6 +10,8 @@ from lab1_proto import logMelSpectrum
 from lab1_proto import cepstrum
 from lab1_tools import lifter
 from lab1_proto import dtw
+from lab1_proto import mfcc
+import dtw as dtw_mod
 
 class TestExerciseFunctions(unittest.TestCase):
     # setting
@@ -19,18 +21,18 @@ class TestExerciseFunctions(unittest.TestCase):
 
     def setUp(self):
         self.data = np.load('data/lab1_example.npz')['example'].item()
-        self.samples = self.data['samples']
+        self.tidigits = np.load('data/lab1_data.npz')['data']
+        # self.samples = self.data['samples']
 
     def test_enframe(self):
         sampling_rate = self.data['samplingrate']
         winlen = int(self.win_size_s * sampling_rate)
         winshift = int(self.win_shift_s * sampling_rate)
-        frames = enframe(self.samples, winlen=winlen, winshift=winshift)
+        frames = enframe(self.data['samples'], winlen=winlen, winshift=winshift)
         exp_ans = self.data['frames']
         assert_allclose(frames, exp_ans)
 
     def test_preemp(self):
-        # frames = enframe(self.samples, winlen=self.winlen, winshift=self.winshift)
         pre_emph = preemp(self.data['frames'], p=0.97)
         exp_ans = self.data['preemph']
         assert_allclose(pre_emph, exp_ans)
@@ -59,8 +61,7 @@ class TestExerciseFunctions(unittest.TestCase):
         lmfcc = lifter(self.data['mfcc'])
         assert_allclose(lmfcc, self.data['lmfcc'])
 
-    def test_dtw(self):
-        import dtw as dtw_mod
+    def test_dtw_ideal(self):
         x = np.array([2, 0, 1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
         y = np.array([1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
         dist = lambda x, y: np.linalg.norm(x-y, ord=2)
@@ -79,4 +80,29 @@ class TestExerciseFunctions(unittest.TestCase):
         for idx, (i, j) in enumerate(path2):
             self.assertEqual(i, path_r_idx[idx])
             self.assertEqual(j, path_c_idx[idx])
+
+    def test_dtw(self):
+        x = mfcc(self.tidigits[12]['samples'])
+        y = mfcc(self.tidigits[22]['samples'])
+        dist = lambda x, y: np.linalg.norm(x-y, ord=2)
+        d1, cost1, acc_cost1, path1 = dtw_mod.dtw(x, y, dist=dist)
+        d2 = dtw(x, y, dist=dist, debug=False)
+        assert_almost_equal(d1, d2)
+
+    def test_dtw_zero(self):
+        x = mfcc(self.tidigits[7]['samples'])
+        dist = lambda x, y: np.linalg.norm(x-y, ord=2)
+        d1, cost1, acc_cost1, path1 = dtw_mod.dtw(x, x, dist=dist)
+        d2 = dtw(x, x, dist=dist, debug=False)
+        assert_almost_equal(d1, d2)
+        # assert_allclose(d2, 0.0)
+        self.assertEqual(d2, 0.0)
+
+    def test_dtw_symmetric(self):
+        x = mfcc(self.tidigits[17]['samples'])
+        y = mfcc(self.tidigits[3]['samples'])
+        dist = lambda x, y: np.linalg.norm(x-y, ord=2)
+        d1 = dtw(x, y, dist=dist, debug=False)
+        d2 = dtw(y, x, dist=dist, debug=False)
+        self.assertEqual(d2, d1)
 
