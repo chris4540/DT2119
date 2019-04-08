@@ -172,8 +172,9 @@ def cepstrum(input_, nceps):
     ret = fftpack.dct(input_, type=2, axis=1)[:, :nceps]
     return ret
 
-def dtw(x, y, dist):
-    """Dynamic Time Warping.
+def dtw(x, y, dist=None):
+    """
+    Dynamic Time Warping
 
     Args:
         x, y: arrays of size NxD and MxD respectively, where D is the dimensionality
@@ -187,5 +188,24 @@ def dtw(x, y, dist):
         path: best path thtough AD
 
     Note that you only need to define the first output for this exercise.
+
+    Impl. details:
+    https://en.wikipedia.org/wiki/Dynamic_time_warping
+    https://github.com/pierre-rouanet/dtw
     """
+    # check args
+    if x.shape[1] != y.shape[1]:
+        raise ValueError("x and y should have the same 2nd dimension!")
+
+    if dist is None:
+        # default use Euclidean distances
+        dist = lambda x, y: np.linalg.norm(x-y, ord=2)
+
+    # obtain the dimensions
+    N = x.shape[0]
+    M = y.shape[0]
+    D = x.shape[1]
+
+    # calculate the local distacne matrix first
+    loc_dist = np.full((N+1, M+1), inf)
     pass
