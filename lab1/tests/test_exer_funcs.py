@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_allclose
+from numpy.testing import assert_almost_equal
 from lab1_proto import enframe
 from lab1_proto import preemp
 from lab1_proto import windowing
@@ -8,6 +9,7 @@ from lab1_proto import powerSpectrum
 from lab1_proto import logMelSpectrum
 from lab1_proto import cepstrum
 from lab1_tools import lifter
+from lab1_proto import dtw
 
 class TestExerciseFunctions(unittest.TestCase):
     # setting
@@ -56,3 +58,25 @@ class TestExerciseFunctions(unittest.TestCase):
     def test_lmfcc(self):
         lmfcc = lifter(self.data['mfcc'])
         assert_allclose(lmfcc, self.data['lmfcc'])
+
+    def test_dtw(self):
+        import dtw as dtw_mod
+        x = np.array([2, 0, 1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+        y = np.array([1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+        dist = lambda x, y: np.linalg.norm(x-y, ord=2)
+
+        d1, cost1, acc_cost1, path1 = dtw_mod.dtw(x, y, dist=dist)
+        d2, cost2, acc_cost2, path2 = dtw(x, y, dist=dist, debug=True)
+
+        assert_almost_equal(d1, d2)
+        assert_allclose(cost1, cost2)
+        assert_allclose(acc_cost1, acc_cost2)
+
+        path_r_idx, path_c_idx = path1
+        self.assertEqual(len(path2), len(path_r_idx))
+        self.assertEqual(len(path2), len(path_c_idx))
+
+        for idx, (i, j) in enumerate(path2):
+            self.assertEqual(i, path_r_idx[idx])
+            self.assertEqual(j, path_c_idx[idx])
+

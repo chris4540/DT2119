@@ -26,3 +26,4 @@ pip install scipy
 pip install matplotlib
 pip install sklearn
 pip install jupyter
+pip install dtw  # this is for testing use

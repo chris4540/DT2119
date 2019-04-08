@@ -183,7 +183,6 @@ def dtw(x, y, dist=None, debug=True):
 
     Outputs:
         d: global distance between the sequences (scalar) normalized to len(x)+len(y)
-
         LD: local distance between frames from x and y (NxM matrix)
         AD: accumulated distance between frames of x and y (NxM matrix)
         path: best path through AD
