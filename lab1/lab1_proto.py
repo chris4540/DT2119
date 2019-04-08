@@ -172,7 +172,7 @@ def cepstrum(input_, nceps):
     ret = fftpack.dct(input_, type=2, axis=1)[:, :nceps]
     return ret
 
-def dtw(x, y, dist=None, debug=True):
+def dtw(x, y, dist=None, debug=False):
     """
     Dynamic Time Warping
 
