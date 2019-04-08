@@ -1,3 +1,15 @@
+"""
+Part 6. Explore Speech Segments with Clustering
+
+This script plots the posterior probability matrices of the speechs of digit 1 and 7
+with different hyperparamaters of GMM (i.e. the number of target classes)
+
+The plot titles gives out the details
+
+e.g. "gmm_post_prob_nc16_digit_7.png"
+    plots the posterior probability matrices of the the speechs of digit 7
+    given by the 16-class GMM
+"""
 from sklearn.mixture import GaussianMixture
 from feature_corr import concat_all_features
 from lab1_proto import mfcc
@@ -31,10 +43,12 @@ if __name__ == "__main__":
         # train the GMM with all data
         clf.fit(all_features)
 
-        for digit in ['1', '7']:
+        for digit in ['1', '4', '7']:
             test_data = pick_data_by_digit(data, digit=digit)
 
-            fig, axes = plt.subplots(nrows=len(test_data), ncols=1, sharex=True, sharey=True, figsize=(12, 8))
+            fig, axes = plt.subplots(
+                nrows=len(test_data), ncols=1, sharex=True, sharey=True,
+                figsize=(12, 8))
             # prediction and plot the posterior matrix
             for i, d in enumerate(test_data):
                 features = mfcc(d['samples'], samplingrate=d['samplingrate'])
@@ -58,5 +72,5 @@ if __name__ == "__main__":
             cbar_ax = fig.add_axes([0.86, 0.15, 0.02, 0.7])
             fig.colorbar(im, cax=cbar_ax)
 
-            plt.savefig("./plots/gmm_post_prob_nd%d_digit_%s.png" % (ncom, digit),
+            plt.savefig("./plots/gmm_post_prob_nc%d_digit_%s.png" % (ncom, digit),
                         dpi=100, bbox_inches='tight')
