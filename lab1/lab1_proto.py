@@ -172,7 +172,7 @@ def cepstrum(input_, nceps):
     ret = fftpack.dct(input_, type=2, axis=1)[:, :nceps]
     return ret
 
-def dtw(x, y, dist=None):
+def dtw(x, y, dist=None, debug=True):
     """
     Dynamic Time Warping
 
@@ -183,9 +183,10 @@ def dtw(x, y, dist=None):
 
     Outputs:
         d: global distance between the sequences (scalar) normalized to len(x)+len(y)
+
         LD: local distance between frames from x and y (NxM matrix)
         AD: accumulated distance between frames of x and y (NxM matrix)
-        path: best path thtough AD
+        path: best path through AD
 
     Note that you only need to define the first output for this exercise.
 
@@ -207,5 +208,52 @@ def dtw(x, y, dist=None):
     D = x.shape[1]
 
     # calculate the local distacne matrix first
-    loc_dist = np.full((N+1, M+1), inf)
-    pass
+    loc_dist = np.empty((N, M))
+    for n in range(N):
+        for m in range(M):
+            loc_dist[n, m] = dist(x[n], y[m])
+
+    # start to calcualte the acc_dist
+    acc_dist = np.zeros((N, M))
+    acc_dist[0, 0] = loc_dist[0, 0]
+
+    # fill the first column and row
+    for n in range(1, N):
+        acc_dist[n, 0] = loc_dist[n, 0] + acc_dist[n-1, 0]
+
+    for m in range(1, M):
+        acc_dist[0, m] = loc_dist[0, m] + acc_dist[0, m-1]
+
+    for n in range(1, N):
+        for m in range(1, M):
+            acc_dist[n, m] = (loc_dist[n, m]
+                + min(acc_dist[n-1, m], acc_dist[n-1, m-1], acc_dist[n, m-1]))
+
+    d = acc_dist[N-1, M-1] / (N + M)
+
+    if debug:
+        path = __path_backtrace(acc_dist)
+        return d, loc_dist, acc_dist, path
+    else:
+        return d
+
+def __path_backtrace(acc_dist):
+    """
+    For debug use of the Dynamic Time Warping function
+    """
+    ret = list()
+    i, j = np.array(acc_dist.shape) - 1
+    ret.append((i, j))
+
+    while (i > 0) or (j > 0):
+        case_ = np.argmin(
+            (acc_dist[i-1, j-1], acc_dist[i-1, j], acc_dist[i, j-1]))
+        if case_ == 0:
+            i -= 1
+            j -= 1
+        elif case_ == 1:
+            i -= 1
+        else:
+            j -= 1
+        ret.append((i, j))
+    return list(reversed(ret))
