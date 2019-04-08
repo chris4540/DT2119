@@ -1,3 +1,6 @@
+"""
+Calculate a global distance matrix and save it
+"""
 import numpy as np
 from lab1_proto import dtw
 from lab1_proto import mfcc
@@ -18,6 +21,8 @@ if __name__ == "__main__":
         feature_i = mfcc(data[i]['samples'])
         feature_j = mfcc(data[j]['samples'])
         d = dtw(feature_i, feature_j)
+        print(d)
         global_dist[i, j] = d
         global_dist[j, i] = d
 
+    np.save("data/global_dist.npy", global_dist)
