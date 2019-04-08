@@ -8,8 +8,10 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 from matplotlib import pyplot as plt
 
 if __name__ == "__main__":
-    data = np.load('data/lab1_data.npz')['data']
+    save_fname = "data/global_dist.npy"
 
+
+    data = np.load('data/lab1_data.npz')['data']
     # calcualte the global distance matrix
     ndata = len(data)
 
@@ -21,8 +23,7 @@ if __name__ == "__main__":
         feature_i = mfcc(data[i]['samples'])
         feature_j = mfcc(data[j]['samples'])
         d = dtw(feature_i, feature_j)
-        print(d)
         global_dist[i, j] = d
         global_dist[j, i] = d
 
-    np.save("data/global_dist.npy", global_dist)
+    np.save(save_fname, global_dist)
