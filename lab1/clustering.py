@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 features = mfcc(d['samples'], samplingrate=d['samplingrate'])
                 posterior_prob = clf.predict_proba(features)
                 ax = axes[i]
-                title = 'Digit {digit} by {speaker} ({gender})'.format(**d)
+                title = 'Posterior for digit {digit} by {speaker} ({gender})'.format(**d)
                 ax.set_title(title)
                 im = ax.matshow(posterior_prob.T)
                 ax.xaxis.tick_bottom()
