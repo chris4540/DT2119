@@ -43,7 +43,16 @@ if __name__ == '__main__':
 
 
     # plot the dendrogram
-    fig = plt.figure(figsize=(25, 10))
     Z = linkage(gdist, "complete")
+
+    fig = plt.figure(figsize=(12, 5))
     dn = dendrogram(Z, labels=labels)
-    fig.savefig('plots/linkage.png', dpi=200, bbox_inches='tight')
+    plt.title("The dendrogram of hierarchical clustering of utterances")
+    fig.tight_layout()
+    fig.savefig('plots/dendrogram.png', dpi=100, bbox_inches='tight')
+
+    fig = plt.figure(figsize=(5, 12))
+    dn = dendrogram(Z, labels=labels, orientation="right")
+    plt.title("The dendrogram of hierarchical clustering of utterances")
+    fig.tight_layout()
+    fig.savefig('plots/den_right.png', dpi=100, bbox_inches='tight')
