@@ -16,6 +16,7 @@ from lab1_proto import mfcc
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import config
 
 def pick_data_by_digit(data, digit):
     """
@@ -29,7 +30,7 @@ def pick_data_by_digit(data, digit):
     return ret
 
 if __name__ == "__main__":
-    data = np.load('data/lab1_data.npz')['data']
+    data = np.load(config.lab1_npz_file)['data']
     all_features = concat_all_features(data, feature="mfcc")
 
     try:
