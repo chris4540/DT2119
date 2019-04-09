@@ -228,6 +228,7 @@ def dtw(x, y, dist=None, debug=False):
             acc_dist[n, m] = (loc_dist[n, m]
                 + min(acc_dist[n-1, m], acc_dist[n-1, m-1], acc_dist[n, m-1]))
 
+    # normalization
     d = acc_dist[N-1, M-1] / (N + M)
 
     if debug:

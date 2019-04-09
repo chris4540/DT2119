@@ -1,4 +1,6 @@
 """
+Plot and compare for questions 7
+
 Question 7: Comparing Utterances
 
 """
@@ -8,6 +10,7 @@ import matplotlib.pyplot as plt
 from lab1_tools import tidigit2labels
 from scipy.cluster.hierarchy import linkage
 from scipy.cluster.hierarchy import dendrogram
+import itertools
 import config
 
 if __name__ == '__main__':
@@ -23,15 +26,20 @@ if __name__ == '__main__':
 
     # generate the labels
     labels = tidigit2labels(data)
+    for i, l in enumerate(labels):
+        print(i, l)
 
     # plot the matrix
-    # TODO: labels
     fig, ax = plt.subplots(1, 1)
-    cax = ax.pcolormesh(gdist)
-    # ax.set_xticklabels(['']+labels)
-    # ax.set_yticklabels(['']+labels)
+    cax = ax.matshow(gdist)
+    ax.set_title("The global distance matrix")
     fig.colorbar(cax)
-    plt.savefig('plots/gdist_mat.png', dpi=200, bbox_inches='tight')
+    fig.tight_layout()
+    plt.savefig('plots/gdist_mat.png', dpi=100, bbox_inches='tight')
+
+    # compare digit 7 for different speakers
+    for i, j in itertools.combinations([16, 17, 38, 39], 2):
+        print(i, j, labels[i], labels[j], gdist[i, j])
 
 
     # plot the dendrogram
