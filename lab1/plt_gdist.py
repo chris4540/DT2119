@@ -1,3 +1,7 @@
+"""
+Question 7: Comparing Utterances
+
+"""
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,15 +21,20 @@ if __name__ == '__main__':
     gdist =  np.load(config.gdist_npy_file)
     data = np.load(config.lab1_npz_file)['data']
 
+    # generate the labels
+    labels = tidigit2labels(data)
+
     # plot the matrix
+    # TODO: labels
     fig, ax = plt.subplots(1, 1)
-    cax = ax.matshow(gdist)
+    cax = ax.pcolormesh(gdist)
+    # ax.set_xticklabels(['']+labels)
+    # ax.set_yticklabels(['']+labels)
     fig.colorbar(cax)
     plt.savefig('plots/gdist_mat.png', dpi=200, bbox_inches='tight')
 
 
     # plot the dendrogram
-    labels = tidigit2labels(data)
     fig = plt.figure(figsize=(25, 10))
     Z = linkage(gdist, "complete")
     dn = dendrogram(Z, labels=labels)
