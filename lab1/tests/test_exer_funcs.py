@@ -20,46 +20,45 @@ class TestExerciseFunctions(unittest.TestCase):
     nceps = 13
 
     def setUp(self):
-        self.data = np.load('data/lab1_example.npz')['example'].item()
+        self.example = np.load('data/lab1_example.npz')['example'].item()
         self.tidigits = np.load('data/lab1_data.npz')['data']
-        # self.samples = self.data['samples']
 
     def test_enframe(self):
-        sampling_rate = self.data['samplingrate']
+        sampling_rate = self.example['samplingrate']
         winlen = int(self.win_size_s * sampling_rate)
         winshift = int(self.win_shift_s * sampling_rate)
-        frames = enframe(self.data['samples'], winlen=winlen, winshift=winshift)
-        exp_ans = self.data['frames']
+        frames = enframe(self.example['samples'], winlen=winlen, winshift=winshift)
+        exp_ans = self.example['frames']
         assert_allclose(frames, exp_ans)
 
     def test_preemp(self):
-        pre_emph = preemp(self.data['frames'], p=0.97)
-        exp_ans = self.data['preemph']
+        pre_emph = preemp(self.example['frames'], p=0.97)
+        exp_ans = self.example['preemph']
         assert_allclose(pre_emph, exp_ans)
 
     def test_windowing(self):
-        windowed = windowing(self.data['preemph'])
-        exp_ans = self.data['windowed']
-        assert_allclose(windowed, self.data['windowed'])
+        windowed = windowing(self.example['preemph'])
+        exp_ans = self.example['windowed']
+        assert_allclose(windowed, self.example['windowed'])
 
     def test_powerSpectrum(self):
-        exp_ans = self.data['spec']
+        exp_ans = self.example['spec']
         nfft = exp_ans.shape[1]
-        power_spec = powerSpectrum(self.data['windowed'], nfft=nfft)
+        power_spec = powerSpectrum(self.example['windowed'], nfft=nfft)
         assert_allclose(power_spec, exp_ans)
 
     def test_logMelSpectrum(self):
-        mspec = logMelSpectrum(self.data['spec'], self.data['samplingrate'])
-        exp_ans = self.data['mspec']
+        mspec = logMelSpectrum(self.example['spec'], self.example['samplingrate'])
+        exp_ans = self.example['mspec']
         assert_allclose(mspec, exp_ans)
 
     def test_cepstrum(self):
-        mfcc = cepstrum(self.data['mspec'], nceps=self.nceps)
-        assert_allclose(mfcc, self.data['mfcc'])
+        mfcc = cepstrum(self.example['mspec'], nceps=self.nceps)
+        assert_allclose(mfcc, self.example['mfcc'])
 
     def test_lmfcc(self):
-        lmfcc = lifter(self.data['mfcc'])
-        assert_allclose(lmfcc, self.data['lmfcc'])
+        lmfcc = lifter(self.example['mfcc'])
+        assert_allclose(lmfcc, self.example['lmfcc'])
 
     def test_dtw_ideal(self):
         x = np.array([2, 0, 1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
