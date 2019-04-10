@@ -9,6 +9,22 @@ The plot titles gives out the details
 e.g. "gmm_post_prob_nc16_digit_7.png"
     plots the posterior probability matrices of the the speechs of digit 7
     given by the 16-class GMM
+
+Can you say something about the classes discovered by the unsupervised learning method?
+    When the number of components is 4, it is probably classifying the pitch.
+    It is because digit 4 and 7 have a similar pattern.
+    When the number of components is 8, it can start to classify some phonemes like "n".
+    We can see it from digit 1 (w Q n) and digit (s e v n)
+    When the number of components is 32, it classify more details like if the
+    phonemes from a man or a woman.
+
+Do the classes roughly correspond to the phonemes you expect to compose each word?
+    Yes and no. Even we see the same digit and the same speaker, they gives random
+    class at the begining. However, in the middle of utterances, it start to give
+    consistent classifications.
+
+Are those classes a stable representation of the word if you compare utterances from different speakers.
+    From the plots we can see that they are not quite state.
 """
 from sklearn.mixture import GaussianMixture
 from feature_corr import concat_all_features
