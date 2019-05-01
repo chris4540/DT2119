@@ -42,23 +42,18 @@ def concatTwoHMMs(hmm1, hmm2):
     # trans = trans_1   | trans1_merge_pi2
     #         ---------------------------------
     #         zeros_mat | trans_2
-    #       = merged_trans1
-    #         -------------
-    #         merged_trans2
     # Notes: trans_1 dropped the terminal state
     # =========================================
+    # the top-right block matrix in the pdf (last state of hmm1 * hmm2_pi)
+    trans1_merge_pi2 = hmm1['transmat'][:-1, -1][:,np.newaxis]*hmm2['startprob']
     # drop the terminal state of the first hmm
-    trans_1 = hmm1['transmat'][:-1,:]
-    # the top-right block matrix in the pdf
-    trans1_merge_pi2 = trans_1[:, -1][:,np.newaxis]*hmm2['startprob']
-    # the matrix merged trans1 and the initial state of hmm2
-    merged_trans1 = np.hstack((trans_1[:, :-1], trans1_merge_pi2))
+    trans_1 = hmm1['transmat'][:-1, :-1]
     # the zero block matrix at the bottom-left corner
-    zeros_mat = np.zeros((hmm2['transmat'].shape[0], trans_1.shape[1]-1))
-    # the bottom row of the block matrix
-    merged_trans2 = np.hstack((zeros_mat , hmm2['transmat']))
+    zeros_mat = np.zeros((hmm2['transmat'].shape[0], trans_1.shape[1]))
     # put them together
-    transmat = np.vstack((merged_trans1, merged_trans2))
+    transmat = np.block([
+                [trans_1        , trans1_merge_pi2],
+                [zeros_mat      , hmm2['transmat']]])
     # =================================
     # merge means and covars
     means = np.vstack((hmm1['means'], hmm2['means']))
