@@ -25,11 +25,53 @@ def concatTwoHMMs(hmm1, hmm2):
     K is the sum of the number of emitting states from the input models
 
     Example:
-       twoHMMs = concatHMMs(phoneHMMs['sil'], phoneHMMs['ow'])
+       twoHMMs = concatTwoHMMs(phoneHMMs['sil'], phoneHMMs['ow'])
+       twoHMMs = concatTwoHMMs(phoneHMMs['sp'], phoneHMMs['ow'])
+       twoHMMs = concatTwoHMMs(phoneHMMs['ow'], phoneHMMs['iy'])
+       twoHMMs = concatTwoHMMs(phoneHMMs['iy'], phoneHMMs['sp'])
 
-    See also: the concatenating_hmms.pdf document in the lab package
+    See also:
+        the concatenating_hmms.pdf document in the lab package
     """
-    return None
+    # ==========================================
+    # concat the initial states
+    # the last state of the first hmm model
+    pi_last = hmm1['startprob'][-1]
+    startprob = np.hstack((hmm1['startprob'][0:-1], pi_last*hmm2['startprob']))
+    # ==========================================
+    # trans = trans_1   | trans1_merge_pi2
+    #         ---------------------------------
+    #         zeros_mat | trans_2
+    #       = merged_trans1
+    #         -------------
+    #         merged_trans2
+    # Notes: trans_1 dropped the terminal state
+    # =========================================
+    # drop the terminal state of the first hmm
+    trans_1 = hmm1['transmat'][:-1,:]
+    # the top-right block matrix in the pdf
+    trans1_merge_pi2 = trans_1[:, -1][:,np.newaxis]*hmm2['startprob']
+    # the matrix merged trans1 and the initial state of hmm2
+    merged_trans1 = np.hstack((trans_1[:, :-1], trans1_merge_pi2))
+    # the zero block matrix at the bottom-left corner
+    zeros_mat = np.zeros((hmm2['transmat'].shape[0], trans_1.shape[1]-1))
+    # the bottom row of the block matrix
+    merged_trans2 = np.hstack((zeros_mat , hmm2['transmat']))
+    # put them together
+    transmat = np.vstack((merged_trans1, merged_trans2))
+    # =================================
+    # merge means and covars
+    means = np.vstack((hmm1['means'], hmm2['means']))
+    covars = np.vstack((hmm1['covars'], hmm2['covars']))
+    # ========================
+    # build the result
+    ret = {
+        "startprob": startprob,
+        "transmat": transmat,
+        "means": means,
+        "covars": covars
+    }
+    return ret
 
 # this is already implemented, but based on concat2HMMs() above
 def concatHMMs(hmmmodels, namelist):
