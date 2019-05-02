@@ -15,8 +15,8 @@ class TestExerciseFunctions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # load data
-        cls.example = np.load('lab2_example.npz')['example'].item()
-        cls.phoneHMMs = np.load('lab2_models_onespkr.npz')['phoneHMMs'].item()
+        cls.example = np.load('data/lab2_example.npz')['example'].item()
+        cls.phoneHMMs = np.load('data/lab2_models_onespkr.npz')['phoneHMMs'].item()
 
     def test_concatHMMs(self):
         """
