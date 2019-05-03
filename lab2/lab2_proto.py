@@ -223,4 +223,14 @@ def updateMeanAndVar(X, log_gamma, varianceFloor=5.0):
          means: MxD mean vectors for each state
          covars: MxD covariance (variance) vectors for each state
     """
-    pass
+    gamma = np.exp(log_gamma)
+    means = np.zeros((log_gamma.shape[1], X.shape[1]))
+    covars = np.zeros(means.shape)
+
+    for i in range(means.shape[0]): # loop over number of states
+        gamma_sum = np.sum(gamma[:,i])
+        means[i] = np.sum(gamma[:,i].reshape(-1, 1) * X, axis = 0) / gamma_sum
+        covars[i] = np.sum(gamma[:,i].reshape(-1, 1) * (X - means[i])**2, axis = 0) / gamma_sum
+        # scale up the covars below the florr of the variance
+        covars[i, covars[i] < varianceFloor] = varianceFloor
+    return means, covars
