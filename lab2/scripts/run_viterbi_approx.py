@@ -1,26 +1,23 @@
 """
-For the part 5.2 Forward Algorithm
-
-Run this script
-    %run scripts/run_fwd_prob.py
+For the part 5.3 Viterbi Approximation
 """
-import numpy as np
 import pandas as pd
+import numpy as np
 from prondict import isolated
 from lab2_proto import concatHMMs
-from lab2_proto import forward
+from lab2_proto import viterbi
 from lab2_tools import logsumexp
 from lab2_tools import log_multivariate_normal_density_diag
 from time import time
 
-def get_loglik(feature, hmm):
+def get_best_path_loglik(feature, hmm):
     trans_mat = hmm['transmat'][:-1,:-1]
     pi_vec = hmm['startprob'][:-1]
     means = hmm['means']
     covars = hmm['covars']
+
     obsloglik = log_multivariate_normal_density_diag(feature, means, covars)
-    log_alpha = forward(obsloglik, np.log(pi_vec), np.log(trans_mat))
-    ret = logsumexp(log_alpha[-1])
+    ret, _ = viterbi(obsloglik, np.log(pi_vec), np.log(trans_mat))
     return ret
 
 def match_model_and_utterances(dataset, wordHMMs):
@@ -29,18 +26,18 @@ def match_model_and_utterances(dataset, wordHMMs):
         fields = [data[k] for k in ['digit', 'gender', 'speaker', 'repetition']]
         label = "_".join(fields)
         lmfcc = data['lmfcc']
-        max_loglik = -np.inf
+        score = -np.inf
         for d in wordHMMs.keys():
-            loglik = get_loglik(lmfcc, wordHMMs[d])
-            if loglik > max_loglik:
-                max_loglik = loglik
+            loglik = get_best_path_loglik(lmfcc, wordHMMs[d])
+            if loglik > score:
+                score = loglik
                 matched_model = d
 
         ret.append({
             'digit': data['digit'],
             'label': label,
             'matched_model': matched_model,
-            'score': max_loglik
+            'score': score
         })
     return ret
 
@@ -57,26 +54,20 @@ if __name__ == "__main__":
     trans_mat = wordHMMs['o']['transmat'][:-1,:-1]
     pi_vec = wordHMMs['o']['startprob'][:-1]
     # =====================================================
-    log_alpha = forward(example['obsloglik'], np.log(pi_vec), np.log(trans_mat))
-
-    # calculate the sequence log likelihood to this hmm model
-    # i.e. log[P(X_{1:T} | HMM model)]
-    log_seq_likelihood = logsumexp(log_alpha[-1])
-    print("The log likelihood of the observation seq to the model:", log_seq_likelihood)
-    # ==================================================================================
-    # check if closed to the example
-    # is_alpha_close = np.allclose(log_alpha, example['logalpha'])
-    # print("Is closed to the example['logalpha']:", is_alpha_close)
-    # score all the 44 utterances in the data array with each of the 11 HMM models in wordHMMs.
-    for d in isolated.keys():
-        wordHMMs[d] = concatHMMs(phoneHMMs, isolated[d])
+    best_seq_loglik, best_path = viterbi(example['obsloglik'], np.log(pi_vec), np.log(trans_mat))
+    assert np.allclose(best_seq_loglik, example['vloglik'])
+    assert np.array_equal(best_path, example['vpath'])
+    # ========================================================================
+    onespkr_wordHMMs = {}
+    for k in isolated.keys():
+        onespkr_wordHMMs[k] = concatHMMs(phoneHMMs, isolated[k])
 
     phoneHMMs_all = np.load('data/lab2_models_all.npz')['phoneHMMs'].item()
     for d in isolated.keys():
         wordHMMs[d] = concatHMMs(phoneHMMs_all, isolated[d])
 
     st = time()
-    resp = match_model_and_utterances(data, wordHMMs)
+    resp = match_model_and_utterances(data, onespkr_wordHMMs)
     onespkr_match = pd.DataFrame(resp)
     resp = match_model_and_utterances(data, wordHMMs)
     all_match = pd.DataFrame(resp)
