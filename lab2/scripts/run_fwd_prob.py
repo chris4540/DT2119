@@ -1,9 +1,7 @@
 """
 For the part 5.2 Forward Algorithm
-TODO:
-    make this to be a test case
+
 Run this script
-    ipython test/test_fwd_prob.py
     %run test/test_fwd_prob.py
 """
 import numpy as np
@@ -30,8 +28,8 @@ if __name__ == "__main__":
     # calculate the sequence log likelihood to this hmm model
     # i.e. log[P(X_{1:T} | HMM model)]
     log_seq_likelihood = logsumexp(log_alpha[-1])
-    print("The log likelihood of the observation seq to the model:", log_seq_likelihood)
+    # print("The log likelihood of the observation seq to the model:", log_seq_likelihood)
 
     # check if closed to the example
-    is_alpha_close = np.allclose(log_alpha, example['logalpha'])
-    print("Is closed to the example['logalpha']:", is_alpha_close)
+    # is_alpha_close = np.allclose(log_alpha, example['logalpha'])
+    # print("Is closed to the example['logalpha']:", is_alpha_close)
