@@ -1,4 +1,4 @@
-RUNTEST=python3 -m unittest -v
+RUNTEST=nosetests -v
 
 TESTCASES=tests/*.py
 
