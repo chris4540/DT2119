@@ -1,5 +1,6 @@
 import numpy as np
-# from lab2_tools import *
+from lab2_tools import logsumexp
+from lab2_tools import log_multivariate_normal_density_diag
 
 def concatTwoHMMs(hmm1, hmm2):
     """ Concatenates 2 HMM models
@@ -100,7 +101,7 @@ def concatHMMs(hmmmodels, namelist):
        wordHMMs['o'] = concatHMMs(phoneHMMs, ['sil', 'ow', 'sil'])
     """
     concat = hmmmodels[namelist[0]]
-    for idx in range(1,len(namelist)):
+    for idx in range(1, len(namelist)):
         concat = concatTwoHMMs(concat, hmmmodels[namelist[idx]])
     return concat
 
@@ -130,7 +131,15 @@ def forward(log_emlik, log_startprob, log_transmat):
     Output:
         forward_prob: NxM array of forward log probabilities for each of the M states in the model
     """
-    pass
+
+    # follow the appendix in the question pdf
+    alpha = np.zeros(log_emlik.shape)
+    alpha[0][:] = log_startprob.T + log_emlik[0]
+
+    for n in range(1,len(alpha)): # time dimension
+        for i in range(alpha.shape[1]): # loop over states
+            alpha[n, i] = logsumexp(alpha[n - 1] + log_transmat[:,i]) + log_emlik[n,i]
+    return alpha, logsumexp(alpha[len(alpha) - 1])
 
 def backward(log_emlik, log_startprob, log_transmat):
     """Backward (beta) probabilities in log domain.
@@ -143,7 +152,11 @@ def backward(log_emlik, log_startprob, log_transmat):
     Output:
         backward_prob: NxM array of backward log probabilities for each of the M states in the model
     """
-    pass
+    log_beta = np.zeros(log_emlik.shape)  # since beta_N = 1 => log_beta_N = 0
+    for n in reversed(range(log_emlik.shape[0] - 1)): # time dimension
+        for i in range(log_emlik.shape[1]): # loop over states
+            log_beta[n, i] = logsumexp(log_transmat[i,:] + log_emlik[n + 1, :] + log_beta[n + 1,:])
+    return log_beta
 
 def viterbi(log_emlik, log_startprob, log_transmat, forceFinalState=True):
     """Viterbi path.
