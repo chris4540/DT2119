@@ -133,13 +133,13 @@ def forward(log_emlik, log_startprob, log_transmat):
     """
 
     # follow the appendix in the question pdf
-    alpha = np.zeros(log_emlik.shape)
-    alpha[0][:] = log_startprob.T + log_emlik[0]
+    log_alpha = np.zeros(log_emlik.shape)
+    log_alpha[0][:] = log_startprob.T + log_emlik[0]
 
-    for n in range(1,len(alpha)): # time dimension
-        for i in range(alpha.shape[1]): # loop over states
-            alpha[n, i] = logsumexp(alpha[n - 1] + log_transmat[:,i]) + log_emlik[n,i]
-    return alpha, logsumexp(alpha[len(alpha) - 1])
+    for n in range(1,len(log_alpha)): # time dimension
+        for i in range(log_alpha.shape[1]): # loop over states
+            log_alpha[n, i] = logsumexp(log_alpha[n - 1] + log_transmat[:,i]) + log_emlik[n,i]
+    return log_alpha
 
 def backward(log_emlik, log_startprob, log_transmat):
     """Backward (beta) probabilities in log domain.
