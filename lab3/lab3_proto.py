@@ -12,7 +12,17 @@ def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
     Output:
        list of phone symbols
     """
-    pass
+    ret = []
+    for w in wordList:
+        ret = ret + pronDict[w]
+        if addShortPause:
+            ret += ['sp']
+
+    if addSilence:
+        ret = ["sil"] + ret + ["sil"]
+    return ret
+
+
 
 def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
     """ forcedAlignmen: aligns a phonetic transcription at the state level
@@ -57,4 +67,4 @@ def hmmLoop(hmmmodels, namelist=None):
        phoneLoop = hmmLoop(phoneHMMs)
        wordLoop = hmmLoop(wordHMMs, ['o', 'z', '1', '2', '3'])
     """
-   pass
+    pass
