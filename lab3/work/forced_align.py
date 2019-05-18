@@ -10,6 +10,8 @@ from lab3_proto import words2phones
 from prondict import prondict
 from lab2_proto import concatHMMs
 import numpy as np
+# ==============
+from lab3_proto import forcedAlignment
 
 if __name__ == "__main__":
     filename = 'tidigits/disc_4.1.1/tidigits/train/man/nw/z43a.wav'
@@ -39,3 +41,6 @@ if __name__ == "__main__":
             stateTrans.append("%s_%i" % (ph, i))
     # print(stateTrans)
     assert stateTrans[10] == 'r_1'
+    # ==============================================
+    symb = forcedAlignment(lmfcc, phoneHMMs, phoneTrans)
+    print(symb)

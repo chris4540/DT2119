@@ -1,5 +1,8 @@
 import numpy as np
-from lab3_tools import *
+# from lab3_tools import *
+from lab2_proto import viterbi
+from lab2_tools import log_multivariate_normal_density_diag as log_mnd_diag
+from lab2_proto import concatHMMs
 
 def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
     """ word2phones: converts word level to phone level transcription adding silence
@@ -37,18 +40,33 @@ def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
        list of strings in the form phoneme_index specifying, for each time step
        the state from phoneHMMs corresponding to the viterbi path.
     """
-    phones = sorted(phoneHMMs.keys())
-    nstates = {i:phoneHMMs[i]["means"].shape[0] for i in phones}
-
-    stateTrans = [phone + '_' + str(stateid) for phone in phoneTrans
-                for stateid in range(nstates[phone])]
-
-
+    # Obtain the mapping from state to number of state
+    nstates = dict()
+    for ph in phoneHMMs.keys():
+        num_state = phoneHMMs[ph]['means'].shape[0]
+        nstates[ph] = num_state
+    # Obtain a mapping from the phoneHMMs to statename
+    stateTrans = list()
+    for ph in phoneTrans:
+        for i in range(nstates[ph]):
+            stateTrans.append("%s_%i" % (ph, i))
+    # ===========================================================
+    # Create the hmm model for this utterance with only the information
+    # of transcription
     utteranceHMM = concatHMMs(phoneHMMs, phoneTrans)
-    logMulti = log_multivariate_normal_density_diag(Imfcc, utteranceHMM["means"], utteranceHMM["covars"])
-    viterbiMatrix = viterbi(logMulti.T, np.log(utteranceHMM["startprob"]), np.log(utteranceHMM["transmat"]))
-    viterbiStateTrans = [stateTrans[int(i)] for i in viterbiMatrix[1]]
-    return viterbiPathState
+
+    # calculate the Viterbi path
+    means = utteranceHMM['means']
+    covars = utteranceHMM['covars']
+    log_emlik = log_mnd_diag(lmfcc, means, covars)
+    # get \pi and A; ignore the terminal state
+    log_pi = np.log(utteranceHMM['startprob'][:-1])
+    log_trans = np.log(utteranceHMM['transmat'][:-1,:-1])
+    _, path = viterbi(log_emlik, log_pi, log_trans)
+    # =========================================================
+    ret = [stateTrans[i] for i in path]
+
+    return ret
 
 
 def hmmLoop(hmmmodels, namelist=None):
