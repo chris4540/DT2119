@@ -37,8 +37,9 @@ def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
                    final silence
 
     Returns:
-       list of strings in the form phoneme_index specifying, for each time step
-       the state from phoneHMMs corresponding to the viterbi path.
+        if return_syb:
+            list of strings in the form phoneme_index specifying, for each time step
+            the state from phoneHMMs corresponding to the viterbi path.
     """
     # Obtain the mapping from state to number of state
     nstates = dict()
