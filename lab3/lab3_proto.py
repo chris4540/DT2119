@@ -23,7 +23,6 @@ def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
     return ret
 
 
-
 def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
     """ forcedAlignmen: aligns a phonetic transcription at the state level
 
@@ -38,7 +37,19 @@ def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
        list of strings in the form phoneme_index specifying, for each time step
        the state from phoneHMMs corresponding to the viterbi path.
     """
-    pass
+    phones = sorted(phoneHMMs.keys())
+    nstates = {i:phoneHMMs[i]["means"].shape[0] for i in phones}
+
+    stateTrans = [phone + '_' + str(stateid) for phone in phoneTrans
+                for stateid in range(nstates[phone])]
+
+
+    utteranceHMM = concatHMMs(phoneHMMs, phoneTrans)
+    logMulti = log_multivariate_normal_density_diag(Imfcc, utteranceHMM["means"], utteranceHMM["covars"])
+    viterbiMatrix = viterbi(logMulti.T, np.log(utteranceHMM["startprob"]), np.log(utteranceHMM["transmat"]))
+    viterbiStateTrans = [stateTrans[int(i)] for i in viterbiMatrix[1]]
+    return viterbiPathState
+
 
 def hmmLoop(hmmmodels, namelist=None):
     """ Combines HMM models in a loop
