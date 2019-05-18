@@ -9,6 +9,7 @@ from lab3_tools import path2info
 from lab3_proto import words2phones
 from prondict import prondict
 from lab2_proto import concatHMMs
+from lab3_tools import frames2trans
 import numpy as np
 # ==============
 from lab3_proto import forcedAlignment
@@ -43,4 +44,5 @@ if __name__ == "__main__":
     assert stateTrans[10] == 'r_1'
     # ==============================================
     symb = forcedAlignment(lmfcc, phoneHMMs, phoneTrans)
-    print(symb)
+
+    frames2trans(symb, outfilename='z43a.lab')
