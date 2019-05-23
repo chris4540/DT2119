@@ -1,5 +1,7 @@
 """
 Part 5 Phoneme Recognition with Deep Neural Networks
+
+Basic implmentation
 """
 import numpy as np
 import json
@@ -29,14 +31,14 @@ def build_model(input_dim, output_dim):
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
-def parse_data(data):
+def parse_data(data, feature):
     """
     Construct input data and labels into a large array
     """
     X_list = []
     y_list = []
     for d in data:
-        X_list.append(d['lmfcc'])
+        X_list.append(d[feature])
         y_list.append(d['targets'])
     x_mat = np.concatenate(X_list, axis=0).astype('float32')
     y_mat = np.concatenate(y_list, axis=0)
@@ -44,23 +46,22 @@ def parse_data(data):
 
 
 if __name__ == "__main__":
-
-    tag = "lmfcc_nondyn_{}".format(Config.activation)
+    feature = "lmfcc"
+    tag = "{}_nondyn_{}".format(feature, Config.activation)
     print("Exp: ", tag)
     # load statelist
     with open('data/state_list.json', 'r') as f:
         state_list = json.load(f)['state_list']
     output_dim = len(state_list)
     # Load data
-    # train_data = np.load("data/nondynamic/lmfcc_train.npz")['data']
-    train_data = np.load("data/nondynamic/lmfcc_train.npz")['data']
-    val_data = np.load("data/nondynamic/lmfcc_val.npz")['data']
-    test_data = np.load("data/nondynamic/lmfcc_test.npz")['data']
+    train_data = np.load("data/nondynamic/%s_train.npz" % feature)['data']
+    val_data = np.load("data/nondynamic/%s_val.npz" % feature)['data']
+    test_data = np.load("data/nondynamic/%s_test.npz" % feature)['data']
 
     # construct input data and labels into a large array
-    train_x, train_y = parse_data(train_data)
-    val_x, val_y = parse_data(val_data)
-    test_x, test_y = parse_data(test_data)
+    train_x, train_y = parse_data(train_data, feature)
+    val_x, val_y = parse_data(val_data, feature)
+    test_x, test_y = parse_data(test_data, feature)
     # one-hot encoding
     train_y = np_utils.to_categorical(train_y, output_dim)
     val_y = np_utils.to_categorical(val_y, output_dim)
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     print("End constructing data")
     # ============================================
     input_dim = train_x.shape[1]
+    print("Input dim = ", input_dim)
     model = build_model(input_dim, output_dim)
     train_log = model.fit(
         train_x, train_y,
