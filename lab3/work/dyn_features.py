@@ -27,8 +27,9 @@ def stack_features(feature_mat, stack=3):
     return stacked_mat
 
 if __name__ == "__main__":
-    feature_name = 'lmfcc'
-    # feature_name = 'mspec'
+    # feature_name = 'lmfcc'
+    feature_name = 'mspec'
+
     print("[Dynamic feature] Working on the feature: ", feature_name)
     # load data
     data = np.load('data/train_val_data.npz')
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
         print("[Dynamic feature]Complete normlaizating ", k)
         # save it
-        np.savez('data/dynamic/d{}_{}.npz'.format(feature_name, k), data=data)
+        np.savez('data/dyn/{}_{}.npz'.format(feature_name, k), data=data)
         print("[Dynamic feature] Wrote the normlaized data", k)
 
 
