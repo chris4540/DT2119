@@ -47,16 +47,25 @@ def parse_data(data, feature):
 
 if __name__ == "__main__":
     feature = "lmfcc"
-    tag = "{}_nondyn_{}".format(feature, Config.activation)
+    dynamic = False
+    # =========================================================
+    if dynamic:
+        dyn_tag = "dyn"
+    else:
+        dyn_tag = "nondyn"
+
+    tag = "_".join([feature, dyn_tag, Config.activation])
     print("Exp: ", tag)
+    # =========================================================
     # load statelist
     with open('data/state_list.json', 'r') as f:
         state_list = json.load(f)['state_list']
     output_dim = len(state_list)
+    path_template = "data/%s/%s_{dtype}.npz" % (dyn_tag, feature)
     # Load data
-    train_data = np.load("data/nondynamic/%s_train.npz" % feature)['data']
-    val_data = np.load("data/nondynamic/%s_val.npz" % feature)['data']
-    test_data = np.load("data/nondynamic/%s_test.npz" % feature)['data']
+    train_data = np.load(path_template.format(dtype="train"))['data']
+    val_data = np.load(path_template.format(dtype="val"))['data']
+    test_data = np.load(path_template.format(dtype="test"))['data']
 
     # construct input data and labels into a large array
     train_x, train_y = parse_data(train_data, feature)
@@ -70,7 +79,9 @@ if __name__ == "__main__":
     print("End constructing data")
     # ============================================
     input_dim = train_x.shape[1]
+    print("===============================")
     print("Input dim = ", input_dim)
+    print("===============================")
     model = build_model(input_dim, output_dim)
     train_log = model.fit(
         train_x, train_y,
