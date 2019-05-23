@@ -29,7 +29,9 @@ if __name__ == "__main__":
             validation.append(d)
         else:
             train.append(d)
-
+    # ===================================
+    print("The size of training set : ", len(train))
+    print("The size of validation set : ", len(validation))
     kwargs = {
         'validation': validation,
         'train': train
