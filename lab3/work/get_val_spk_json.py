@@ -3,7 +3,8 @@ For section 4.4 Part 1
 
 Script to split the full training to validation set and training set
 
-Get the list of spk in validation set
+Get the list of speaker in validation set and save it to the json file:
+val_spk.json
 """
 import numpy as np
 import json
