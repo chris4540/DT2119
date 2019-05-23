@@ -17,7 +17,9 @@ def get_mean_std(data, feature):
 
 
 if __name__ == "__main__":
-   feature_name = 'lmfcc'
+   # feature_name = 'lmfcc'
+   feature_name = 'mspec'
+   print("Working on the feature: ", feature_name)
    # load data
    data = np.load('data/train_val_data.npz')
    valdata = data['validation']
@@ -39,7 +41,7 @@ if __name__ == "__main__":
          new_data = dict()
          new_data['filename'] = d['filename']
          new_data['targets'] = d['targets']
-         new_data['lmfcc'] = (d['lmfcc'] - mean) / std
+         new_data[feature_name] = (d[feature_name] - mean) / std
          data.append(new_data)
 
       print("Complete normlaizating ", k)
