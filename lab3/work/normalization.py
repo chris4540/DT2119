@@ -34,17 +34,17 @@ if __name__ == "__main__":
    }
 
    for k, v in datasets.items():
-      normalized_train = list()
+      data = list()
       for d in tqdm(v):
          new_data = dict()
          new_data['filename'] = d['filename']
          new_data['targets'] = d['targets']
          new_data['lmfcc'] = (d['lmfcc'] - mean) / std
-         normalized_train.append(new_data)
+         data.append(new_data)
 
       print("Complete normlaizating ", k)
       # save it
-      np.savez('data/nondynamic/{}_{}.npz'.format(feature_name, k), data=new_data)
+      np.savez('data/nondynamic/{}_{}.npz'.format(feature_name, k), data=data)
 
 
 
