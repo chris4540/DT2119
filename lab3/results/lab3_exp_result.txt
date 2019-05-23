@@ -4,15 +4,20 @@ class Config:
     activation = 'relu'
 
 1. non-dyn lmfcc:
-Vad  Acc. = 0.6338492384951498
-Test Acc. = 0.6064567837967546
+loss: 1.0526 - acc: 0.6676 - val_loss: 1.1790 - val_acc: 0.6349
+Vad  Acc. = 0.6348831251479883
+Test Acc. = 0.6079570973030101
+
 2. non-dyn mspec:
-Vad  Acc. = 0.6522337362210646
-Test Acc. = 0.6195863297662632
+loss: 1.0008 - acc: 0.6830 - val_loss: 1.1071 - val_acc: 0.6566
+Vad  Acc. = 0.6565558409734596
+Test Acc. = 0.6211527856418039
+
 3. dyn lmfcc:
 loss: 0.5133 - acc: 0.8230 - val_loss: 0.6453 - val_acc: 0.7934
 Vad  Acc. = 0.7933862453449788
 Test Acc. = 0.7735037134680358
+
 4. dyn mspec:
 Vad  Acc. = 0.7890174984649307
 Test Acc. = 0.767317784897664
