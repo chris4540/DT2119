@@ -59,21 +59,15 @@ if __name__ == "__main__":
         data = list()
         for d in tqdm(v):
             new_data = dict()
-            new_data['filename'] = d['filename']
+            # new_data['filename'] = d['filename']
             new_data['targets'] = d['targets']
             dyn_feature = stack_features(d[feature_name])
-            new_data[feature_name] = scaler.transform(dyn_feature)
+            # use half precision
+            new_data[feature_name] = scaler.transform(dyn_feature).astype("float16")
             data.append(new_data)
 
         print("[Dynamic feature]Complete normlaizating ", k)
         # save it
         np.savez('data/dyn/{}_{}.npz'.format(feature_name, k), data=data)
         print("[Dynamic feature] Wrote the normlaized data", k)
-
-
-
-
-
-
-
 

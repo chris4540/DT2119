@@ -3,24 +3,12 @@ Data normalization for 4.6
 """
 import numpy as np
 from tqdm import tqdm
-
-
-def get_mean_std(data, feature):
-   # Obtain all data
-   all_X = list()
-   for d in tqdm(data):
-      all_X.append(d[feature])
-   # concat
-   X_full = np.concatenate(all_X, axis=0)
-   # cal mean and std
-   mean_X = np.mean(X_full, axis=0)
-   std_X = np.std(X_full,  axis=0)
-   return mean_X, std_X
-
+from sklearn.preprocessing import StandardScaler
 
 if __name__ == "__main__":
     # feature_name = 'lmfcc'
     feature_name = 'mspec'
+
     print("Working on the feature: ", feature_name)
     # load data
     data = np.load('data/train_val_data.npz')
@@ -28,9 +16,16 @@ if __name__ == "__main__":
     traindata = data['train']
     testdata = np.load('data/testdata.npz')['testdata']
 
-    # calculate the mean and std from train data
-    mean, std = get_mean_std(traindata, feature_name)
-    print("Complete calculating mean and std")
+    # Calculate the mean and std first
+    print("[Non-dynamic feature] Calculate the mean and std ....")
+    # for each utterance generate dynamic features
+    scaler = StandardScaler()
+
+    for d in tqdm(traindata):
+        feature_mat = d[feature_name]
+        scaler.partial_fit(feature_mat) # do online fitting
+    print("[Non-dynamic feature] Complete calculate the standard scaler")
+    # =========================================================
     datasets = {
         'train': traindata,
         'test': testdata,
@@ -41,15 +36,14 @@ if __name__ == "__main__":
         data = list()
         for d in tqdm(v):
             new_data = dict()
-            new_data['filename'] = d['filename']
+            # new_data['filename'] = d['filename']
             new_data['targets'] = d['targets']
-            new_data[feature_name] = (d[feature_name] - mean) / std
+            # use half precision
+            new_data[feature_name] = scaler.transform(d[feature_name]).astype("float16")
             data.append(new_data)
 
-        print("Complete normlaizating ", k)
+        print("[Non-dynamic feature]Complete normlaizating ", k)
         # save it
-        np.savez('data/nondynamic/{}_{}.npz'.format(feature_name, k), data=data)
-
-
-
+        np.savez('data/nondyn/{}_{}.npz'.format(feature_name, k), data=data)
+        print("[Non-dynamic feature] Wrote the normlaized data", k)
 
