@@ -6,8 +6,8 @@ from tqdm import tqdm
 from sklearn.preprocessing import StandardScaler
 
 if __name__ == "__main__":
-    # feature_name = 'lmfcc'
-    feature_name = 'mspec'
+    feature_name = 'lmfcc'
+    # feature_name = 'mspec'
 
     print("Working on the feature: ", feature_name)
     # load data
@@ -42,7 +42,7 @@ if __name__ == "__main__":
             new_data[feature_name] = scaler.transform(d[feature_name]).astype("float16")
             data.append(new_data)
 
-        print("[Non-dynamic feature]Complete normlaizating ", k)
+        print("[Non-dynamic feature] Complete normlaizating ", k)
         # save it
         np.savez('data/nondyn/{}_{}.npz'.format(feature_name, k), data=data)
         print("[Non-dynamic feature] Wrote the normlaized data", k)
