@@ -3,6 +3,7 @@ Script to build dynamic features + normalization
 """
 import numpy as np
 from tqdm import tqdm
+from sklearn.preprocessing import StandardScaler
 
 def stack_features(feature_mat, stack=3):
     """
@@ -40,19 +41,13 @@ if __name__ == "__main__":
     # Calculate the mean and std first
     print("Calculate the mean and std ....")
     # for each utterance generate dynamic features
-    train_features = []
+    scaler = StandardScaler()
+
     for d in tqdm(traindata):
         feature_mat = d[feature_name]
         stacked = stack_features(feature_mat)
-        train_features.append(stacked)
-
-    train_concat = np.concatenate(train_features, axis=0)
-    # cal mean and std
-    mean = np.mean(train_concat, axis=0)
-    std = np.std(train_concat,  axis=0)
-    print("Complete calculate the mean and std")
-    train_concat = None
-    train_features = None
+        scaler.partial_fit(stacked) # do online fitting
+    print("Complete calculate the standard scaler")
     # =========================================================
     datasets = {
         'train': traindata,
@@ -67,7 +62,7 @@ if __name__ == "__main__":
             new_data['filename'] = d['filename']
             new_data['targets'] = d['targets']
             dyn_feature = stack_features(d[feature_name])
-            new_data[feature_name] = (dyn_feature - mean) / std
+            new_data[feature_name] = scaler.transform(dyn_feature)
             data.append(new_data)
 
         print("[Dynamic feature]Complete normlaizating ", k)
