@@ -30,3 +30,13 @@ activation = 'tanh'
 activation = 'sigmoid'
 1. V Acc. = 0.6398815312540204
    T Acc. = 0.6096217845968733
+-------------------------------------
+[lmfcc_dyn_relu] Frame-by-frame acc. =  0.7735037137838946
+[lmfcc_dyn_relu] Frame-by-frame edit dist avg. =  0.660804223315242
+[lmfcc_dyn_relu] Frame-by-frame acc. at the phoneme level =  0.8559646473444251
+[lmfcc_dyn_relu] Frame-by-frame edit dist avg. at the phoneme level =  0.6983342426159184
+
+[lmfcc_nondyn_relu] Frame-by-frame acc. =  0.6079570979702871
+[lmfcc_nondyn_relu] Frame-by-frame edit dist avg. =  1.0881878876319515
+[lmfcc_nondyn_relu] Frame-by-frame acc. at the phoneme level =  0.7054742130720478
+[lmfcc_nondyn_relu] Frame-by-frame edit dist avg. =  1.0517773574470135
